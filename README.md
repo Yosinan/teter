@@ -1,7 +1,7 @@
 # Multi-User Task Management API with Role-Based Access
 
 ## Introduction
-This project is a Multi-User Task Management API with role-based access control. It demonstrates authentication, API development, and authorization using Laravel and React/Next.
+This project is a Multi-User Task Management API with role-based access control. It demonstrates authentication, API development, and authorization using Laravel and Next.
 
 ## Features
 - **User Authentication**: Registration and login using Laravel Sanctum.
@@ -60,7 +60,7 @@ This project is a Multi-User Task Management API with role-based access control.
    php artisan serve
    ```
 
-<!-- ### Frontend (React App)
+### Frontend (Next App)
 1. Navigate to the frontend directory:
    ```sh
    cd client
@@ -72,7 +72,7 @@ This project is a Multi-User Task Management API with role-based access control.
 3. Start the development server:
    ```sh
    npm start
-   ``` -->
+   ```
 
 ## Usage
 1. Register a new user via `/api/register`.
