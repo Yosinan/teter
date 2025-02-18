@@ -56,8 +56,6 @@ class UserRolePermissionSeeder extends Seeder
             'email' => 'admin@gmail.com',
         ], [
             'username' => 'Admin',
-            'first_name' => 'Admin',
-            'last_name' => 'User',
             'password' => Hash::make('12345678'),
         ]);
 

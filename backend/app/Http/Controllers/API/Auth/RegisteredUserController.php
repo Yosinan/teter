@@ -25,8 +25,6 @@ class RegisteredUserController extends Controller
             // Validate the user's input
             $validatedData = $request->validate([
                 'username' => 'required|string|max:255|unique:' . User::class,
-                'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
                 'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
                 'password' => ['required', 'confirmed', Rules\Password::defaults()], // Validates password and confirmation
             ]);
@@ -37,8 +35,6 @@ class RegisteredUserController extends Controller
             // Create a new user
             $user = User::create([
                 'username' => $validatedData['username'],
-                'first_name' => $validatedData['first_name'],
-                'last_name' => $validatedData['last_name'],
                 'email' => $validatedData['email'],
                 'password' => $validatedData['password'],
             ]);
