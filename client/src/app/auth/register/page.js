@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
     const [username, setUsername] = useState('');
     const [error, setError] = useState('');
     const router = useRouter();
@@ -17,7 +18,7 @@ export default function Register() {
         e.preventDefault();
         setError('');
 
-        const response = await api.register({ email, password, username });
+        const response = await api.register({ email, password, username, password_confirmation: confirmPassword });
         if (response.error) {
             setError(response.error);
             toast.error(response.error);
@@ -54,6 +55,15 @@ export default function Register() {
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full p-2 mb-2 border rounded"
                 />
+
+                <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full p-2 mb-2 border rounded"
+                />
+
                 <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded">Register</button>
 
                 {/* Already have an account link */}
