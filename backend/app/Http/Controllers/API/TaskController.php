@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 
 class TaskController extends Controller
@@ -13,7 +14,7 @@ class TaskController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role === 'admin') {
+        if ($user->hasRole('admin')) {
             $tasks = Task::all();
         } else {
             $tasks = Task::where('user_id', $user->id)->get();
@@ -58,8 +59,9 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $user = Auth::user();
+        Log::info('User: ' . $user->id . ' Task: ' . $task->id . ' User Task: ' . $task->user_id . 'User email: ' . $user->email);
 
-        if ($user->role !== 'admin' && $task->user_id !== $user->id) {
+        if (!$user->hasRole('admin') && $task->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
@@ -80,7 +82,7 @@ class TaskController extends Controller
     {
         $user = Auth::user();
 
-        if ($user->role !== 'admin' && $task->user_id !== $user->id) {
+        if (!$user->hasRole('admin') && $task->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
