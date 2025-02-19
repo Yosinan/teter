@@ -4,14 +4,33 @@ import { api } from '@/utils/api';
 import { useRouter } from 'next/navigation';
 import LogoutButton from '../components/LogoutButton';
 import { FiPlusCircle } from 'react-icons/fi';
-import { FaCheckCircle, FaCalendarAlt, FaPen, FaTrashAlt, FaFlag } from 'react-icons/fa';
+import { FaCheckCircle, FaUser, FaCalendarAlt, FaPen, FaTrashAlt, FaFlag } from 'react-icons/fa';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function TaskList() {
     const [tasks, setTasks] = useState([]);
+    const [user, setUser] = useState(null);
     const [error, setError] = useState('');
+    const [isLoggedIn, setIsLoggedIn] = useState(true);
     const router = useRouter();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setIsLoggedIn(false);
+        } else {
+            const fetchUser = async () => {
+                const response = await api.getUser(token);
+                if (response.error) {
+                    setIsLoggedIn(false);
+                } else {
+                    setUser(response);
+                }
+            };
+            fetchUser();
+        }
+    }, [router]);
 
     const handleDelete = async (taskId) => {
         const token = localStorage.getItem('token');
@@ -35,6 +54,7 @@ export default function TaskList() {
             if (response.error) {
                 setError(response.error);
             } else {
+                console.log(response);
                 setTasks(response);
             }
         };
@@ -57,7 +77,7 @@ export default function TaskList() {
                 </button>
             </div>
 
-            <h2 className="text-3xl font-semibold text-left text-white mb-8">Here are your Tasks</h2>
+            <h2 className="text-3xl font-semibold text-left text-white mb-8">List of Tasks</h2>
 
             {error && <p className="text-red-500 text-center mb-4">{error}</p>}
 
@@ -73,6 +93,14 @@ export default function TaskList() {
 
                         {/* Task Details with Icons */}
                         <div className="grid grid-cols-4 gap-4 mb-4 text-sm text-gray-500">
+                            <div className="flex items-center">
+                                <FaUser className="mr-2 text-lg" />
+                                <strong className='pr-1'>Owner: </strong>
+                                <span className="text-gray-200 capitalize">
+                                    {task.user.id === user.id ? 'You' : task.user.username}
+                                    </span>
+                            </div>
+
                             <div className="flex items-center">
                                 <FaCheckCircle className="mr-2 text-lg" />
                                 <strong className='pr-1'>Status: </strong>
@@ -106,6 +134,7 @@ export default function TaskList() {
                                 <strong className='pr-1'>Deadline: </strong>
                                 <span className="text-violet-400">{new Date(task.deadline).toLocaleDateString()}</span>
                             </div>
+
                         </div>
 
                         {/* Buttons Container */}
