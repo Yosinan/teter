@@ -15,9 +15,9 @@ class TaskController extends Controller
         $user = Auth::user();
 
         if ($user->hasRole('admin')) {
-            $tasks = Task::all();
+            $tasks = Task::with('user')->get();
         } else {
-            $tasks = Task::where('user_id', $user->id)->get();
+            $tasks = Task::with('user')->where('user_id', $user->id)->get();
         }
 
         return response()->json($tasks);
@@ -59,8 +59,7 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $user = Auth::user();
-        Log::info('User: ' . $user->id . ' Task: ' . $task->id . ' User Task: ' . $task->user_id . 'User email: ' . $user->email);
-
+        
         if (!$user->hasRole('admin') && $task->user_id !== $user->id) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
