@@ -145,4 +145,4 @@ See `.env.example` for backend and configure `.env.local` for frontend as needed
 - [React Documentation](https://reactjs.org/docs/getting-started.html)
 - [Traefik Documentation](https://doc.traefik.io/traefik/)
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)
-- [Redis Documentation](https://redis.io
+- [Redis Documentation](https://redis.io)
