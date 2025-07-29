@@ -56,11 +56,11 @@ docker-compose up -d --build
 
 ---
 
-## 6. Database Migration & Seeding
-
-Run migrations and seed the database:
+## 6. Laravel Application Setup
 ```bash
-docker-compose exec app php artisan migrate --seed
+docker compose exec app composer install
+docker compose exec app php artisan key:generate
+docker compose exec app php artisan migrate --seed
 ```
 
 ---
