@@ -26,10 +26,20 @@ docker-compose up -d --build
 - Traefik will route traffic and handle SSL.
 - Access Traefik dashboard at `http://your-server-ip:8080` (optional).
 
-## 5. Database Backups
+## 5. Backup & Cron Job
 
-- Run `./backup.sh` regularly to backup your database and files.
-- Store backups off-server for disaster recovery.
+- **Backup:**  
+  Inside `scripts/`, run `./backup.sh` to backup your database and files.
+- **Cron Job:**  
+  Set up a cron job to automate backups:
+  ```bash
+  (crontab -l 2>/dev/null; echo "0 3 * * * * /home/deployer/scripts/backup.sh") | crontab -
+  ```
+- **Backup Location:**  
+  Backups are stored in `/backups` directory on your server.
+- **Backup Cleanup:**  
+  The script keeps backups for the last 7 days and deletes older files.
+
 
 ## 6. Updating the Stack
 

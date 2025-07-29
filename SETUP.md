@@ -76,15 +76,6 @@ docker-compose exec app php artisan migrate --seed
 
 ---
 
-## 8. Backup & Restore
-
-- **Backup:**  
-  Run `./backup.sh` to backup database and files.
-- **Restore:**  
-  (Add your restore instructions here if needed.)
-
----
-
 ## 9. Useful Docker Commands
 
 - View logs:  
