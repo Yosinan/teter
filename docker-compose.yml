@@ -1,0 +1,86 @@
+services:
+  traefik:
+    image: traefik:latest
+    restart: unless-stopped
+    command:
+      - --api.insecure=true                      # Traefik dashboard (remove in prod)
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.email=ymymym4634@gmail.com
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"  # Dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+      - /opt/traefik/acme.json:/letsencrypt/acme.json
+
+  app:
+    build:
+      context: ./backend
+      args:
+        - NODE_VERSION=20
+    restart: unless-stopped
+    command: php artisan serve --host=0.0.0.0 --port=9000
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=laravel
+      - DB_USERNAME=laravel
+      - DB_PASSWORD=your_secure_password
+      - REDIS_HOST=redis
+    volumes:
+      - ./backend:/var/www/html
+      - ./backend/storage/logs:/var/www/html/storage/logs
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.laravel.rule=Host(`api.yosinan.tech`)"
+      - "traefik.http.routers.laravel.entrypoints=websecure"
+      - "traefik.http.routers.laravel.tls.certresolver=letsencrypt"
+      - "traefik.http.services.laravel.loadbalancer.server.port=9000"
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build:
+      context: ./client
+    restart: unless-stopped
+    working_dir: /app
+    command: npm run start -- -H 0.0.0.0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`www.yosinan.tech`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+    depends_on:
+      - traefik
+
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: laravel
+      POSTGRES_USER: laravel
+      POSTGRES_PASSWORD: your_secure_password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backups:/backups
+
+  redis:
+    image: redis:7.2-alpine
+    restart: unless-stopped
+    command: redis-server --save 60 1 --loglevel warning --io-threads 4
+    volumes:
+      - redis_data:/data
+
+volumes:
+  db_data:
+  redis_data:
+  traefik-certificates:
