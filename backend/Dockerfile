@@ -32,3 +32,14 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 COPY --from=node-builder /app/public /var/www/html/public
 
 WORKDIR /var/www/html
+
+# Install PHP dependencies
+RUN composer install \
+    && php artisan config:clear \
+    && php artisan route:clear \
+    && php artisan view:clear \
+    && php artisan key:generate
+
+EXPOSE 8000
+
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
