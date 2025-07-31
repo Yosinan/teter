@@ -31,6 +31,8 @@ COPY --from=composer:2.7 /usr/bin/composer /usr/bin/composer
 # Optional: Copy built assets (e.g., /public or /dist)
 COPY --from=node-builder /app/public /var/www/html/public
 
+COPY . /var/www/html
+
 WORKDIR /var/www/html
 
 # Install PHP dependencies
@@ -38,7 +40,15 @@ RUN composer install \
     && php artisan config:clear \
     && php artisan route:clear \
     && php artisan view:clear \
-    && php artisan key:generate
+    && php artisan key:generate \
+    && php artisan optimize \
+    && php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache \
+    && php artisan migrate --force
+
+# Set permissions (adjust as necessary)
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 EXPOSE 8000
 
